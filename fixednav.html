@@ -1,0 +1,77 @@
+<?php
+date_default_timezone_set("America/Lima");
+require_once("controles/classRecibeEntrega.php");
+$Fechahora = date("Y-m-d H:i:s", (strtotime("-2 Hours")));
+$FechaHoy = date("Y-m-d");
+$tusuario = $_SESSION['tipousuario'];
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//ES"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../../favicon.ico">
+
+        <title>Entrega</title>
+
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="css/offcanvas.css"/> 
+        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css"/>
+        <link rel='stylesheet' type='text/css' href='css/jquery.alerts.css'/>
+        <link rel="stylesheet" type='text/css' href="css/alertify.core.css" />
+        <link rel="stylesheet" type='text/css' href="css//alertify.default.css" />
+        <link rel="stylesheet" type="text/css" href="css/style_recibe_entrega.css"/>
+        
+        <script type="text/javascript" src="js/jquery.1.7.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.min.js"></script>
+        <script type="text/javascript" src="js/FuncionesEntrega.js"></script>
+        <script type="text/javascript" src="js/jquery.alerts.js"></script>
+        <script type="text/javascript" src="js/CreaTablas.js"></script>
+</head>
+<nav id="minavbar" class="navbar navbar-default navbar-fixed-top" role="navigation">
+       <div class="container" >
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Recibidos</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="#" id="nuevo" onclick="ControlesNuevo();">Nuevo</a> </li>
+            <!--<li> <a <span title="Buscar" class="glyphicon glyphicon-search"></span> </a> </li>-->
+            <li><a href="#" id="btn_cancelar" onclick="ControlesCancelar();" >Cancelar</a></li>
+            <li><a href="#" id="guardar" onclick="Inserta_Recibidos();" >Guardar</a></li>
+            <!--<li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Nav header</li>
+                <li><a href="#">Separated link</a></li>
+                <li><a href="#">One more separated link</a></li>
+              </ul>
+            </li> -->
+           </ul>
+          <ul class="nav navbar-nav navbar-right">
+              <li>           
+                        <input type="text" id="buscador" style="text-transform:uppercase" placeholder="Buscar" class="form-control"> 
+                  
+                </li>
+            <li><a href="" id="imprimir_r" onclick="fnImprimeRecibidos('manualmente');" >Imprimir</a></li>
+            <li><a href="" id="anular" onclick="fnConfirmaAnulaRecibidos();">Anular</a></li>
+            
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
