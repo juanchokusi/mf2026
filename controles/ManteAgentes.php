@@ -147,17 +147,18 @@ if ($_POST["opt"] === "PRECUADRE") {
     $datos = array();
     while ($fila = $query->fetch_array()) {
         $datos[] = array(
-            "nrocuenta" => $fila["nrocuenta"],
-            "fecha" => $fila["fecha"],
+            "nrocuenta"         => $fila["nrocuenta"],
+            "fecha"             => $fila["fecha"],
             "idtipotransaccion" => $fila["idtipotransaccion"],
-            "descripcion" => $fila["descripcion"],
-            "tdinero" => $fila["tdinero"],
-            "editable" => $fila["editable"],
-            "idusuario" => $fila["idusuario"],
-            "ingreso" => $fila["ingreso"],
-            "salida" => $fila["salida"],
-            "saldo_cuenta" => $fila["saldo_cuenta"],
-            "saldo_efectivo" => $fila["saldo_efectivo"]
+            "descripcion"       => $fila["descripcion"],
+            "tdinero"           => $fila["tdinero"],
+            "editable"          => $fila["editable"],
+            "idusuario"         => $fila["idusuario"],
+            "ingreso"           => $fila["ingreso"],
+            "salida"            => $fila["salida"],
+            "nromovs"           => $fila["nromovs"],
+            "saldo_cuenta"      => $fila["saldo_cuenta"],
+            "saldo_efectivo"    => $fila["saldo_efectivo"]
         );
     }
     $json = json_encode($datos);
@@ -166,7 +167,7 @@ if ($_POST["opt"] === "PRECUADRE") {
 
 if ($_POST["opt"] === "GES-PRECUADRE") {
     $query = $mysqli->query("CALL spGestionaPrecuadre('".$_POST["accion"]."','".$_POST["nrocuenta"]."','".$_POST["fecha"]."','".$_POST["idtipotransaccion"]."',
-                            '".$_POST["descripcion"]."','".$_POST["dinero"]."','".$_POST["ingreso"]."','".$_POST["salida"]."','".$_POST["idusuario"]."')");
+                            '".$_POST["descripcion"]."','".$_POST["dinero"]."','".$_POST["ingreso"]."','".$_POST["salida"]."','".$_POST["nromovs"]."','".$_POST["idusuario"]."')");
 }
 
 

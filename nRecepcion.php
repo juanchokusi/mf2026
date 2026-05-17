@@ -44,6 +44,7 @@ if (!isset($_SESSION["nick"])) {
             .guardar{background:url(img/save.png) 0 0 no-repeat}
             .cancelar{background:url(img/cancel.png) 0 0 no-repeat}
         </style>
+
     </head>
 
     <body>

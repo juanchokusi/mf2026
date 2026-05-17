@@ -237,7 +237,6 @@ function EvaluaBusqueda() {
     
   }
 
-
 function RecuperaClientesB(valor_b, opts_b) {
     $.ajax({
       async: true,
@@ -351,36 +350,31 @@ function RecuperaFila(idfila) {
     $("#total_r").val(total);
     document.getElementById("md_igv").value = elTableCells[11].innerHTML;
     document.getElementById("md_itf").value = elTableCells[12].innerHTML;
-    document.getElementById("md_usuaregistra").value =
-      elTableCells[17].innerHTML;
-    document.getElementById("md_fechaentrega").value =
-      elTableCells[18].innerHTML;
-    document.getElementById("md_usuaentrega").value =
-      elTableCells[19].innerHTML;
-    var obs = elTableCells[20].innerHTML;
+    document.getElementById("md_usuaregistra").value = elTableCells[18].innerHTML;
+    document.getElementById("md_fechaentrega").value = elTableCells[19].innerHTML;
+    document.getElementById("md_usuaentrega").value = elTableCells[20].innerHTML;
+    var obs = elTableCells[21].innerHTML;
     obs = obs.substring(6, obs.length - 7);
     $("#observa").val(obs);
 
-    document.getElementById("ciudaddestino").value = elTableCells[21].innerHTML;
-    document.getElementById("destino").value = elTableCells[22].innerHTML;
-    document.getElementById("pdfnomsucudestino").value =
-      elTableCells[22].innerHTML;
+    document.getElementById("ciudaddestino").value = elTableCells[23].innerHTML;
+    document.getElementById("destino").value = elTableCells[24].innerHTML;
+    document.getElementById("pdfnomsucudestino").value = elTableCells[23].innerHTML;
     //var correla = elTableCells[1].innerHTML;
     //document.getElementById("correlativo").value = correla.substring(3, 8);
-    document.getElementById("codgirosucursal").value =
-      elTableCells[2].innerHTML;
+    document.getElementById("codgirosucursal").value = elTableCells[2].innerHTML;
     //document.getElementById("codgirosucursal").value = elTableCells[2].innerHTML;
     document.getElementById("codsucursald").value = elTableCells[8].innerHTML;
     document.getElementById("pdfcoddestino").value = elTableCells[8].innerHTML;
-    $("#usuaentrega").val(elTableCells[19].innerHTML);
+    $("#usuaentrega").val(elTableCells[20].innerHTML);
     $("#cuentas").val(elTableCells[15].innerHTML);
-    $("#anulado").val(elTableCells[24].innerHTML);
-    $("#idclienter").val(elTableCells[25].innerHTML);
-    $("#idclienteb").val(elTableCells[26].innerHTML);
-    $("#datos_edita").val(elTableCells[27].innerHTML);
-    $("#nroboleta").val(elTableCells[28].innerHTML);
-    $("#en_efectivo").val(elTableCells[29].innerHTML);
-    $("#correlativo").val(elTableCells[30].innerHTML);
+    $("#anulado").val(elTableCells[25].innerHTML);
+    $("#idclienter").val(elTableCells[26].innerHTML);
+    $("#idclienteb").val(elTableCells[27].innerHTML);
+    $("#datos_edita").val(elTableCells[28].innerHTML);
+    $("#nroboleta").val(elTableCells[29].innerHTML);
+    $("#en_efectivo").val(elTableCells[30].innerHTML);
+    $("#correlativo").val(elTableCells[31].innerHTML);
     $("#sele_fr").val(idfila);
     //alert($("#total_r").val());
     DeshabilitaControles();
@@ -440,6 +434,7 @@ function CreaTablaRecibidos(jsonrecibe) {
     html += "<td align='right' data-campo='total'><span>" + jsonrecibe[contador].total + "</span></td>";
     html += "<td>" + jsonrecibe[contador].nro_cuenta + "</td>";
     /*15 */ html += "<td class='editable' data-campo='nro_operacion'><span>" + jsonrecibe[contador].nro_operacion + "</span></td>";
+    html += "<td >" + jsonrecibe[contador].telefono + "</td>";
     html += "<td >" + jsonrecibe[contador].usuario_registra + "</td>";
     html += "<td >" + jsonrecibe[contador].fechahora_entrega + "</td>";
     html += "<td >" + jsonrecibe[contador].usuario_entrega + "</td>";
@@ -1889,11 +1884,10 @@ $('#nrocuenta_edit').on('input', function () {
 });
   
 $("#btn_yape").click(function () {
-    
   MuestraModalYape();
-
   });
 
+$("#btn_yape").attr("disabled", true);
   MuestraRecibidos($("#fechahoy").val(), $("#optbuscar").val());
 });
 /* ============ DOCUEMENT================================================ */
@@ -2030,6 +2024,8 @@ function ControlesAlGuardar() {
   $("#btn_anular").attr("disabled", true);
   $("#imprimir_r").attr("disabled", true);
   $("#btn_masdatos").attr("disabled", true);
+  $("#btn_yape").attr("disabled", true);
+
 }
 
 function ControlesAlCancelar() {
@@ -2054,6 +2050,7 @@ function ControlesNuevo() {
   $("#btn_anular").attr("disabled", true);
   $("#imprimir_r").attr("disabled", true);
   $("#btn_masdatos").attr("disabled", true);
+  $("#btn_yape").attr("disabled", false);
 }
 
 function ControlesAlEditar() {
@@ -2770,13 +2767,13 @@ function UpdateCuenta( p_idcliente, p_idcuenta, p_nrocuenta) {
   }); 
 }
 
-function MuestraModalYape___() {
+function MuestraModalYape() {
   $.confirm({
-    title: "Buscar usuario",
+    title: "Buscar usuario <img src='img/Icono_Yape2.png' width='50' height='30'>",
     content: `
       <form>
         <div class="input-group">
-          <input type="text" id="telefono_yape_buscar" oninput="celular_yape.value = this.value" pattern="[0-9]*" maxlength="10" class="form-control" placeholder="Nro. de Yape" >
+          <input type="text" id="telefono_yape_buscar" oninput="celular_yape.value = this.value" onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10" class="form-control" placeholder="Nro. de Yape" >
             <span class="input-group-btn">
               <a href="#" id="btn_busca_yape" class="btn btn-default glyphicon glyphicon-search blue"></a>
             </span>
@@ -2785,23 +2782,27 @@ function MuestraModalYape___() {
         <div id="campos" style="display:none; margin-top:10px;">
             <div class="input-group input-group-sm ">
               <span class="input-group-addon">D.N.I.</span>
-              <input type="text" id="dni_yape" placeholder="DNI" pattern="[0-9]*" maxlength="12" class="form-control">
+              <input type="text" id="dni_yape" placeholder="DNI" maxlength="12" class="form-control" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+               <span class="input-group-btn">
+              <a href="#" id="btn_busca_dni" class="btn btn-default glyphicon glyphicon-search blue"></a>
+              </span>
             </div>
             <div class="input-group input-group-sm ">
               <span class="input-group-addon">Nombres</span>
-              <input type="text" id="nombres_yape" placeholder="Nombres de Beneficiario" maxlength="50" class="form-control">
+              <input type="text" id="nombres_yape" placeholder="Nombres de Beneficiario" maxlength="50" class="form-control" >
             </div>
             <div class="input-group input-group-sm ">
               <span class="input-group-addon">Apellidos</span>
-              <input type="text" id="apellidos_yape" placeholder="Apellidos de Beneficiario" maxlength="100" class="form-control">
+              <input type="text" id="apellidos_yape" placeholder="Apellidos de Beneficiario" maxlength="100" class="form-control" >
             </div>
             <div class="input-group input-group-sm ">
-              <span class="input-group-addon">Nro Celular</span>
-              <input type="text" id="celular_yape" placeholder="Número de Celular" value="" class="form-control" readonly>
+              <span class="input-group-addon">Nro Yape</span>
+              <input type="text" id="celular_yape" placeholder="Número de Yape" value="" class="form-control" readonly>
             </div>           
        </div>
 
       <div id="msg"></div>
+      <div id="msg1"></div>
       </form>
         `,
     onContentReady: function () {
@@ -2817,29 +2818,31 @@ function MuestraModalYape___() {
         btn.prop("disabled", true);
         jc.$content.find("#msg").html("Buscando...");
 
-        $.ajax({
+        $.ajax({async: true, type: "POST", dataType: "json", cache: false,
           url: "controles/ManteRecibidos.php",
-          type: "POST",
-          data: { opt: "BuscaNroYape", telefono: tel },
-          dataType: "json",
+          data: { opt: "BuscaNroYape", valor: tel, op: "T" },
           success: function (resp) {
             let campos = jc.$content.find("#campos");
-            campos.slideDown();
-
-            if (resp.existe) {
+            if (resp[0].idcliente > 0) {
               jc.$content
                 .find("#msg")
                 .html('<span style="color:green;">Encontrado</span>');
-
-              $("#dni").val(resp.data.dni);
-              $("#nombres").val(resp.data.nombres);
-              $("#apellido1").val(resp.data.apellido1);
-              $("#apellido2").val(resp.data.apellido2);
+              $("#idclienteb").val(resp[0].idcliente);
+              $("#dnib").val(resp[0].dni_ruc);
+              $("#nombresb").val(resp[0].apel_razon + " " + resp[0].nombres);
+              $("#cuentasb").val(resp[0].nrocuenta);
+              campos.slideUp();
+              $("#nombres_yape, #apellidos_yape").val("");
+              jc.buttons.guardar.hide(); // ocultar botón Guardar
+              $(".jconfirm").remove(); // cerrar modal
             } else {
+              campos.slideDown();
               jc.$content
                 .find("#msg")
                 .html('<span style="color:orange;">Nuevo registro</span>');
-              $("#dni, #nombres, #apellido1, #apellido2").val("");
+              $("#nombres_yape, #apellidos_yape").val("");
+              
+              jc.buttons.guardar.show(); // mostrar botón Guardar
             }
 
             btn.prop("disabled", false);
@@ -2847,48 +2850,113 @@ function MuestraModalYape___() {
         });
       }
 
-      // CLICK
-      jc.$content.find("#btnBuscar").on("click", buscar);
+      function buscardni() {
+        let dni = jc.$content.find("#dni_yape").val();
+        let btn_dni = jc.$content.find("#btn_busca_dni");
 
+        if (!dni) return;
+
+        btn_dni.prop("disabled", true);
+        jc.$content.find("#msg1").html("Buscando DNI...");
+
+        $.ajax({
+          async: true,
+          type: "POST",
+          dataType: "json",
+          cache: false,
+          url: "controles/ManteRecibidos.php",
+          data: { opt: "BuscaNroYape", valor: dni, op: "D" },
+          success: function (resp) {
+            let campos = jc.$content.find("#campos");
+            if (resp[0].idcliente === "-") {
+              /* $("#nombres_yape").removeAttr("readonly");
+              $("#apellidos_yape").removeAttr("readonly"); */
+              $("#nombres_yape, #apellidos_yape").val("");
+            } else {
+              jc.$content
+                .find("#msg1")
+                .html('<span style="color:green;">DNI Encontrado</span>');
+              /* $("#idclienteb").val(resp[0].idcliente); */
+              $("#nombres_yape").val(resp[0].nombres);
+              $("#apellidos_yape").val(resp[0].apel_razon);
+              $("#cuentasb").val(resp[0].nrocuenta);
+              $("#nombres_yape").prop("readonly", true);
+              $("#apellidos_yape").prop("readonly", true);
+            }
+
+            btn_dni.prop("disabled", false);
+          },
+        });
+      }
+
+      $('#nombres_yape, #apellidos_yape, #dni_yape').on('input', function () {
+        var texto = $(this).val();
+        // 1. Permite solo letras, números y espacios (borra lo demás)
+        texto = texto.replace(/[^a-zA-Z0-9 ]/g, '');
+        // 2. Evita espacios al inicio
+        texto = texto.replace(/^\s+/, '');
+        // 3. Evita espacios dobles o múltiples
+        texto = texto.replace(/\s{2,}/g, ' ');
+        $(this).val(texto);
+      });
+
+      
+
+      // CLICK
+      jc.$content.find("#btn_busca_yape").on("click", buscar);
+      jc.$content.find("#btn_busca_dni").on("click", buscardni);
+      
       // ENTER
-      jc.$content.find("#telefono").on("keypress", function (e) {
+      jc.$content.find("#telefono_yape_buscar").on("keypress", function (e) {
         if (e.which === 13) {
           e.preventDefault();
           buscar();
         }
       });
+      jc.$content.find("#dni_yape").on("keypress", function (e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          buscardni();
+        }
+      });
 
       // 🔹 DEBOUNCE AUTOCOMPLETE
-      jc.$content.find("#telefono").on("keyup", function () {
+/*       jc.$content.find("#telefono_yape_buscar").on("keyup", function () {
         clearTimeout(timeout);
         timeout = setTimeout(buscar, 500);
-      });
+      }); */
     },
     buttons: {
       guardar: {
         text: "Guardar",
         btnClass: "btn-green",
+        isHidden: true,
         action: function () {
           let datos = {
-            telefono: this.$content.find("#telefono").val(),
-            dni: this.$content.find("#dni").val(),
-            nombres: this.$content.find("#nombres").val(),
-            apellido1: this.$content.find("#apellido1").val(),
-            apellido2: this.$content.find("#apellido2").val(),
+            opcion: "INSERTA",
+            /* dniruc: this.$content.find("#dni_yape").val(), */
+            dniruc: this.$content.find("#celular_yape").val().trim(),
+            apelrazon: this.$content.find("#apellidos_yape").val().trim(),
+            nombre: this.$content.find("#nombres_yape").val().trim(),
+            direccion: "N/A",
+            fono: this.$content.find("#celular_yape").val(),
+            email: "N/A",
+            usuamodi: $("#nick").val(),
           };
 
           $.ajax({
-            url: "php/guardar_usuario.php",
+            url: "controles/ManteClientes.php",
             type: "POST",
             data: datos,
             dataType: "json",
             success: function (resp) {
-              if (resp.ok) {
+              if (resp[0].flag === "0") {
                 $.alert("Guardado correctamente");
                 $(".jconfirm").remove(); // cerrar modal
               } else {
                 $.alert("Error: " + resp.error);
               }
+              BuscarYape(datos.fono);
             },
           });
 
@@ -2896,6 +2964,28 @@ function MuestraModalYape___() {
         },
       },
       cerrar: function () {},
+    },
+  });
+}
+
+function BuscarYape(telefono) {
+  $.ajax({
+    async: true,
+    type: "POST",
+    dataType: "json",
+    cache: false,
+    url: "controles/ManteRecibidos.php",
+    data: { opt: "BuscaNroYape", valor: telefono, op: "T" },
+    beforeSend: function (objeto) { $("#overlay_pass").show(); },
+    complete: function (objeto) { $("#overlay_pass").hide(); },
+    success: function (resp) {
+      if (resp[0].idcliente > 0) {
+        $("#idclienteb").val(resp[0].idcliente);
+        $("#dnib").val(resp[0].dni_ruc);
+        $("#nombresb").val(resp[0].apel_razon + " " + resp[0].nombres);
+        $("#cuentasb").val(resp[0].nrocuenta);
+        $("#nombres_yape, #apellidos_yape").val("");
+      }
     },
   });
 }

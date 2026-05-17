@@ -27,6 +27,7 @@ if( $_POST["opt"]==="R" )
         "total"                 =>$recibidos["total"],        
         "nro_cuenta"            =>$recibidos["nro_cuenta"],
         "nro_operacion"         =>$recibidos["nro_operacion"],        
+        "telefono"              =>$recibidos["telefono"],
         "usuario_registra"      =>$recibidos["usuario_registra"],
         "fechahora_entrega"     =>$recibidos["fechahora_entrega"],
         "usuario_entrega"       =>$recibidos["usuario_entrega"],
@@ -437,5 +438,21 @@ if ($_POST["opt"] === "ListaCuentaCliente") {
     echo ($json); 
   }
 
+if ($_POST["opt"] === "BuscaNroYape") {
+    $query = $mysqli->query("call spMuestraClientexBusqueda('" . $_POST["valor"] . "','" . $_POST["op"] . "')");
+    $datos = array();
+    while ($valor = $query->fetch_array()) {
+      $datos[] = array(
+        "idcliente"   => $valor["idcliente"],
+        "dni_ruc"     => $valor["dni_ruc"],
+        "apel_razon"  => $valor["apel_razon"],
+        "nombres"     => $valor["nombres"],
+        "telefono"    => $valor["telefono"],
+        "nrocuenta"   => $valor["nrocuenta"] 
+      );
+    }
+    $json = json_encode($datos);
+    echo ($json); 
+  }
 
-$mysqli->close();
+  $mysqli->close();

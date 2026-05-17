@@ -21,19 +21,20 @@
             <th>Total</th>
             <th>Nro.Cuenta</th>
   <!--15--> <th>Nro.Operacion</th>
+  <!--16--> <th>Nro. YAPE</th>
             <th >Usuario Registra</th>
             <th >Fecha Entrega</th>
             <th >Usuario Entrega</th>
             <th>Observaciones</th>
-  <!--20--><th class="oculto">Destino</th>                
+  <!--21--><th class="oculto">Destino</th>                
             <th class="oculto">NomSucursal</th>
             <th>Datos.del.Pago</th>
             <th class="oculto">A</th>
             <th class="oculto">Codigo</th>
-   <!--25--> <th class="oculto">Codigo</th>
+   <!--26--> <th class="oculto">Codigo</th>
             <th class="oculto">Codigo</th>
             <th class="oculto">Codigo</th>
-	    <th class="oculto">Codigo</th>
+	          <th class="oculto">Codigo</th>
             <th class="oculto">correaltivo</th>
           </tr>
         </thead>
@@ -56,6 +57,7 @@
             <th id='total_o'>Otros</th>
             <th id='total_g'>Total</th>
             <th></th>
+    <!--15--><th></th>
     <!--15--><th></th>
             <th >UsuaRgstra</th>
             <th >fechaEntrega</th>

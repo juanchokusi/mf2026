@@ -15,6 +15,7 @@
           <th style='display: none'>idusuario</th>
           <th class="text-end">Ingreso</th>
           <th class="text-end">Salida</th>
+          <th class="text-end">nromovs</th>
           <th class="text-end">INGRESO</th>
           <th class="text-end">SALIDA</th>
           <th>Acciones</th>

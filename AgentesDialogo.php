@@ -95,7 +95,7 @@
             </tbody>
           </table>
         </div>
-//**  Saludos */
+
         <div id="div_txt_metas" style="display:none;">
           <div class="input-group input-group-sm" style="display: flex; margin-bottom: 2px;">
             <label style="flex: 1; margin: 0; padding: 2px; text-align: center; background: #f8f9fa; border: 1px solid #ddd;">F. Inicio</label>

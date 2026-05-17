@@ -2127,6 +2127,7 @@ if ($("#datos_cuenta").val() !== "" ) {
             "<td style='display: none'>" + pcuadre.idusuario + "</td>" +
             "<td align='right' style='width: 15%'>" + pcuadre.ingreso + "</td>" +
             "<td align='right' style='width: 15%'>" + pcuadre.salida + "</td>" +
+            "<td align='right' style='width: 15%'>" + pcuadre.nromovs + "</td>" +
             "<td align='right' style='width: 15%'>" + pcuadre.saldo_cuenta + "</td>" +
             "<td align='right' style='width: 15%'>" + pcuadre.saldo_efectivo + "</td>" +
             "<td>" + (btn_accion === "S" ? "<button id='btn_edit_pc' onclick='fnEditarPrecuadre(this.id);' class='btn btn-xs edit-btn'><span class='glyphicon glyphicon-pencil'></span></button>" +
