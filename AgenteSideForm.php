@@ -15,7 +15,6 @@
           <th style='display: none'>idusuario</th>
           <th class="text-end">Ingreso</th>
           <th class="text-end">Salida</th>
-          <th class="text-end">nromovs</th>
           <th class="text-end">INGRESO</th>
           <th class="text-end">SALIDA</th>
           <th>Acciones</th>
@@ -48,7 +47,6 @@
       <button type="button" class="btn btn-info" id="btn_sideform_nuevo">Nuevo</button>
       <button type="button" class="btn btn-success" id="btn_sideform_guardar">Guardar</button>
       <button type="button" class="btn btn-danger" id="btn_sideform_cancelar">Cancelar</button>
-      <button type="button" class="btn btn-warning" id="btn_sideform_ajustar">Ajustar Agente</button>
     </form>
   </div>
 
