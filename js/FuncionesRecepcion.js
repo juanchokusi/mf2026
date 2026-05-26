@@ -2767,13 +2767,12 @@ function UpdateCuenta( p_idcliente, p_idcuenta, p_nrocuenta) {
   }); 
 }
 
-function MuestraModalYape() {
-  $.confirm({
-    title: "Buscar usuario <img src='img/Icono_Yape2.png' width='50' height='30'>",
-    content: `
+// Devuelve el HTML del modal Yape utilizado para buscar y registrar usuarios por número o DNI.
+function getYapeModalContent() {
+  return `
       <form>
         <div class="input-group">
-          <input type="text" id="telefono_yape_buscar" oninput="celular_yape.value = this.value" onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10" class="form-control" placeholder="Nro. de Yape" >
+          <input type="text" id="telefono_yape_buscar" oninput="celular_yape.value = this.value" onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="9" class="form-control" placeholder="Nro. de Yape" >
             <span class="input-group-btn">
               <a href="#" id="btn_busca_yape" class="btn btn-default glyphicon glyphicon-search blue"></a>
             </span>
@@ -2782,7 +2781,7 @@ function MuestraModalYape() {
         <div id="campos" style="display:none; margin-top:10px;">
             <div class="input-group input-group-sm ">
               <span class="input-group-addon">D.N.I.</span>
-              <input type="text" id="dni_yape" placeholder="DNI" maxlength="12" class="form-control" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+              <input type="text" id="dni_yape" placeholder="DNI" maxlength="8" class="form-control" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                <span class="input-group-btn">
               <a href="#" id="btn_busca_dni" class="btn btn-default glyphicon glyphicon-search blue"></a>
               </span>
@@ -2804,170 +2803,248 @@ function MuestraModalYape() {
       <div id="msg"></div>
       <div id="msg1"></div>
       </form>
-        `,
-    onContentReady: function () {
-      let jc = this;
-      let timeout = null;
+        `;
+}
 
-      function buscar() {
-        let tel = jc.$content.find("#telefono_yape_buscar").val();
-        let btn = jc.$content.find("#btn_busca_yape");
+// Valida que el número de Yape tenga exactamente 9 dígitos.
+function isValidYapePhone(phone) {
+  return phone && phone.length === 9;
+}
 
-        if (!tel) return;
+// Valida que el DNI tenga exactamente 8 dígitos.
+function isValidYapeDni(dni) {
+  return dni && dni.length === 8;
+}
 
-        btn.prop("disabled", true);
-        jc.$content.find("#msg").html("Buscando...");
-
-        $.ajax({async: true, type: "POST", dataType: "json", cache: false,
-          url: "controles/ManteRecibidos.php",
-          data: { opt: "BuscaNroYape", valor: tel, op: "T" },
-          success: function (resp) {
-            let campos = jc.$content.find("#campos");
-            if (resp[0].idcliente > 0) {
-              jc.$content
-                .find("#msg")
-                .html('<span style="color:green;">Encontrado</span>');
-              $("#idclienteb").val(resp[0].idcliente);
-              $("#dnib").val(resp[0].dni_ruc);
-              $("#nombresb").val(resp[0].apel_razon + " " + resp[0].nombres);
-              $("#cuentasb").val(resp[0].nrocuenta);
-              campos.slideUp();
-              $("#nombres_yape, #apellidos_yape").val("");
-              jc.buttons.guardar.hide(); // ocultar botón Guardar
-              $(".jconfirm").remove(); // cerrar modal
-            } else {
-              campos.slideDown();
-              jc.$content
-                .find("#msg")
-                .html('<span style="color:orange;">Nuevo registro</span>');
-              $("#nombres_yape, #apellidos_yape").val("");
-              
-              jc.buttons.guardar.show(); // mostrar botón Guardar
-            }
-
-            btn.prop("disabled", false);
-          },
-        });
-      }
-
-      function buscardni() {
-        let dni = jc.$content.find("#dni_yape").val();
-        let btn_dni = jc.$content.find("#btn_busca_dni");
-
-        if (!dni) return;
-
-        btn_dni.prop("disabled", true);
-        jc.$content.find("#msg1").html("Buscando DNI...");
-
-        $.ajax({
-          async: true,
-          type: "POST",
-          dataType: "json",
-          cache: false,
-          url: "controles/ManteRecibidos.php",
-          data: { opt: "BuscaNroYape", valor: dni, op: "D" },
-          success: function (resp) {
-            let campos = jc.$content.find("#campos");
-            if (resp[0].idcliente === "-") {
-              /* $("#nombres_yape").removeAttr("readonly");
-              $("#apellidos_yape").removeAttr("readonly"); */
-              $("#nombres_yape, #apellidos_yape").val("");
-            } else {
-              jc.$content
-                .find("#msg1")
-                .html('<span style="color:green;">DNI Encontrado</span>');
-              /* $("#idclienteb").val(resp[0].idcliente); */
-              $("#nombres_yape").val(resp[0].nombres);
-              $("#apellidos_yape").val(resp[0].apel_razon);
-              $("#cuentasb").val(resp[0].nrocuenta);
-              $("#nombres_yape").prop("readonly", true);
-              $("#apellidos_yape").prop("readonly", true);
-            }
-
-            btn_dni.prop("disabled", false);
-          },
-        });
-      }
-
-      $('#nombres_yape, #apellidos_yape, #dni_yape').on('input', function () {
-        var texto = $(this).val();
-        // 1. Permite solo letras, números y espacios (borra lo demás)
-        texto = texto.replace(/[^a-zA-Z0-9 ]/g, '');
-        // 2. Evita espacios al inicio
-        texto = texto.replace(/^\s+/, '');
-        // 3. Evita espacios dobles o múltiples
-        texto = texto.replace(/\s{2,}/g, ' ');
-        $(this).val(texto);
-      });
-
-      
-
-      // CLICK
-      jc.$content.find("#btn_busca_yape").on("click", buscar);
-      jc.$content.find("#btn_busca_dni").on("click", buscardni);
-      
-      // ENTER
-      jc.$content.find("#telefono_yape_buscar").on("keypress", function (e) {
-        if (e.which === 13) {
-          e.preventDefault();
-          buscar();
-        }
-      });
-      jc.$content.find("#dni_yape").on("keypress", function (e) {
-        if (e.which === 13) {
-          e.preventDefault();
-          buscardni();
-        }
-      });
-
-      // 🔹 DEBOUNCE AUTOCOMPLETE
-/*       jc.$content.find("#telefono_yape_buscar").on("keyup", function () {
-        clearTimeout(timeout);
-        timeout = setTimeout(buscar, 500);
-      }); */
-    },
-    buttons: {
-      guardar: {
-        text: "Guardar",
-        btnClass: "btn-green",
-        isHidden: true,
-        action: function () {
-          let datos = {
-            opcion: "INSERTA",
-            /* dniruc: this.$content.find("#dni_yape").val(), */
-            dniruc: this.$content.find("#celular_yape").val().trim(),
-            apelrazon: this.$content.find("#apellidos_yape").val().trim(),
-            nombre: this.$content.find("#nombres_yape").val().trim(),
-            direccion: "N/A",
-            fono: this.$content.find("#celular_yape").val(),
-            email: "N/A",
-            usuamodi: $("#nick").val(),
-          };
-
-          $.ajax({
-            url: "controles/ManteClientes.php",
-            type: "POST",
-            data: datos,
-            dataType: "json",
-            success: function (resp) {
-              if (resp[0].flag === "0") {
-                $.alert("Guardado correctamente");
-                $(".jconfirm").remove(); // cerrar modal
-              } else {
-                $.alert("Error: " + resp.error);
-              }
-              BuscarYape(datos.fono);
-            },
-          });
-
-          return false;
-        },
-      },
-      cerrar: function () {},
-    },
+// Lanza la petición AJAX para buscar un usuario Yape por número de teléfono.
+function searchYapeByPhone(phone) {
+  return $.ajax({
+    async: true,
+    type: "POST",
+    dataType: "json",
+    cache: false,
+    url: "controles/ManteRecibidos.php",
+    data: { opt: "BuscaNroYape", valor: phone, op: "T" },
+    beforeSend: function (objeto) { $("#overlay_pass").show(); },
+    complete: function (objeto) { $("#overlay_pass").hide(); },
   });
 }
 
+// Lanza la petición AJAX para buscar un usuario Yape por DNI.
+function searchYapeByDni(dni) {
+  return $.ajax({
+    async: true,
+    type: "POST",
+    dataType: "json",
+    cache: false,
+    url: "controles/ManteRecibidos.php",
+    data: { opt: "BuscaNroYape", valor: dni, op: "D" },
+    beforeSend: function (objeto) { $("#overlay_pass").show(); },
+    complete: function (objeto) { $("#overlay_pass").hide(); },
+  });
+}
+
+// Envía los datos de un nuevo cliente Yape al servidor para su creación.
+function saveYapeClient(datos) {
+  return $.ajax({
+    async: true,
+    type: "POST",
+    dataType: "json",
+    cache: false,
+    url: "controles/ManteClientes.php",
+    data: datos,
+    beforeSend: function (objeto) { $("#overlay_pass").show(); },
+    complete: function (objeto) { $("#overlay_pass").hide(); },
+  });
+}
+
+// Actualiza los campos del modal según la respuesta de búsqueda por teléfono.
+function updateYapeFieldsFromPhone(resp, jc) {
+  var campos = jc.$content.find("#campos");
+  if (resp[0].idcliente > 0) {
+    jc.$content
+      .find("#msg")
+      .html('<span style="color:green;">Encontrado</span>');
+    $("#idclienteb").val(resp[0].idcliente);
+    $("#dnib").val(resp[0].dni_ruc);
+    $("#nombresb").val(resp[0].apel_razon + " " + resp[0].nombres);
+    $("#cuentasb").val(resp[0].nrocuenta);
+    campos.slideUp();
+    $("#nombres_yape, #apellidos_yape").val("");
+    jc.buttons.guardar.hide();
+    $(".jconfirm").remove();
+  } else {
+    campos.slideDown();
+    jc.$content
+      .find("#msg")
+      .html('<span style="color:orange;">Nuevo registro</span>');
+    $("#nombres_yape, #apellidos_yape").val("");
+    jc.buttons.guardar.show();
+  }
+}
+
+// Actualiza los campos del modal según la respuesta de búsqueda por DNI.
+function updateYapeFieldsFromDni(resp, jc) {
+  if (resp[0].idcliente === "-") {
+    $("#nombres_yape, #apellidos_yape").val("");
+    jc.$content
+      .find("#msg1")
+      .html('<span style="color:red;">DNI NO Encontrado</span>');
+    // Restaurar texto del botón a su estado original si existe
+    if (jc && jc.$box) {
+      var btn = jc.$box.find('.jconfirm-buttons button').filter(function() { return $(this).text().trim() === 'Agregar Nro Yape' || $(this).text().trim() === 'Guardar'; });
+      if (btn.length) btn.text('Guardar');
+    }
+  } else {
+    jc.$content
+      .find("#msg1")
+      .html('<span style="color:green;">DNI Encontrado</span>');
+    $("#nombres_yape").val(resp[0].nombres);
+    $("#apellidos_yape").val(resp[0].apel_razon);
+    $("#cuentasb").val(resp[0].nrocuenta);
+    $("#nombres_yape").prop("readonly", true);
+    $("#apellidos_yape").prop("readonly", true);
+    // Cambiar texto del botón guardar a "Agregar Nro Yape" para indicar acción específica
+    if (jc && jc.$box) {
+      var btn = jc.$box.find('.jconfirm-buttons button').filter(function() { return $(this).text().trim() === 'Guardar' || $(this).text().trim() === 'Agregar Nro Yape'; });
+      if (btn.length) btn.text('Agregar Nro Yape');
+    }
+  }
+}
+
+// Asocia los eventos del modal Yape: búsqueda, validación y capturas de teclado.
+function bindYapeModalEvents(jc) {
+  function buscar() {
+    var telefono = jc.$content.find("#telefono_yape_buscar").val();
+    if (!isValidYapePhone(telefono)) {
+      $.alert({ title: 'Número de Yape debe tener 9 dígitos', content: 'Money-Flash', type: 'red' });
+      return;
+    }
+
+    var btn = jc.$content.find("#btn_busca_yape");
+    btn.prop("disabled", true);
+    jc.$content.find("#msg").html("Buscando...");
+
+    searchYapeByPhone(telefono).done(function (resp) {
+      updateYapeFieldsFromPhone(resp, jc);
+    }).always(function () {
+      btn.prop("disabled", false);
+    });
+  }
+
+  function buscardni() {
+    var dni = jc.$content.find("#dni_yape").val();
+    if (!isValidYapeDni(dni)) {
+      $.alert({ title: 'DNI debe tener 8 dígitos', content: 'Money-Flash', type: 'red' });
+      return;
+    }
+
+    var btn_dni = jc.$content.find("#btn_busca_dni");
+    btn_dni.prop("disabled", true);
+    jc.$content.find("#msg1").html("Buscando DNI...");
+
+    searchYapeByDni(dni).done(function (resp) {
+      updateYapeFieldsFromDni(resp, jc);
+    }).always(function () {
+      btn_dni.prop("disabled", false);
+    });
+  }
+
+  jc.$content.find("#nombres_yape, #apellidos_yape, #dni_yape").on("input", function () {
+    var texto = $(this).val();
+    texto = texto.replace(/[^a-zA-Z0-9 ]/g, "");
+    texto = texto.replace(/^\s+/, "");
+    texto = texto.replace(/\s{2,}/g, " ");
+    $(this).val(texto);
+  });
+
+  jc.$content.find("#btn_busca_yape").on("click", buscar);
+  jc.$content.find("#btn_busca_dni").on("click", buscardni);
+
+  jc.$content.find("#telefono_yape_buscar").on("keypress", function (e) {
+    if (e.which === 13) {
+      e.preventDefault();
+      buscar();
+    }
+  });
+
+  jc.$content.find("#dni_yape").on("keypress", function (e) {
+    if (e.which === 13) {
+      e.preventDefault();
+      buscardni();
+    }
+  });
+}
+
+// Construye la configuración de botones del modal Yape, incluyendo el guardado del nuevo registro.
+function getYapeModalButtons() {
+  return {
+    guardar: {
+      text: "Guardar",
+      btnClass: "btn-green",
+      isHidden: true,
+      action: function () {
+        var datos = {
+          opcion: "INSERTA",
+          dniruc: this.$content.find("#dni_yape").val(),
+          apelrazon: this.$content.find("#apellidos_yape").val().trim(),
+          nombre: this.$content.find("#nombres_yape").val().trim(),
+          direccion: "N/A",
+          fono: this.$content.find("#celular_yape").val(),
+          email: "N/A",
+          usuamodi: $("#nick").val(),
+        };
+
+        if (datos.dniruc === "" || datos.apelrazon === "" || datos.nombre === "") {
+          $.alert({ title: 'DNI, Nombres y Apellidos son obligatorios', content: 'Money-Flash', type: 'red' });
+          return false;
+        }
+
+        $.confirm({
+          title: "seguro de guardar?",
+          content: "Se agregara nuevo numero de Yape: " + datos.fono,
+          type: "orange",
+          typeAnimated: true,
+          buttons: {
+            Aceptar: {
+              text: "Aceptar",
+              btnClass: "btn-green",
+              action: function () {
+                saveYapeClient(datos).done(function (resp) {
+                  if (resp[0].flag === "0") {
+                    $.alert("Guardado correctamente");
+                    $(".jconfirm").remove();
+                  } else {
+                    $.alert("Error Yape: " + resp.error);
+                  }
+                  BuscarYape(datos.fono);
+                });
+              },
+            },
+            close: function () {},
+          },
+        });
+
+        return false;
+      },
+    },
+    cerrar: function () {},
+  };
+}
+
+// Crea y muestra el modal Yape con el contenido y eventos previamente definidos.
+function MuestraModalYape() {
+  $.confirm({
+    title: "Buscar usuario <img src='img/Icono_Yape2.png' width='50' height='30'>",
+    content: getYapeModalContent(),
+    onContentReady: function () {
+      bindYapeModalEvents(this);
+    },
+    buttons: getYapeModalButtons(),
+  });
+}
+
+// Realiza la búsqueda de un usuario Yape por teléfono y carga los datos encontrados en el formulario principal.
 function BuscarYape(telefono) {
   $.ajax({
     async: true,

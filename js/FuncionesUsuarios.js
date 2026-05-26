@@ -1,4 +1,3 @@
-
 function RecuperaFilaUS(idfila) {
     var idfila1 = $('#sele_us').val();
     var elTableRow = document.getElementById(idfila);
@@ -202,12 +201,11 @@ console.log($('#txt_idbanco').val());
     }
 
 return false;
-}
-       
+}       
 function fnInsertaUsuarios(){
         var Table = document.getElementById("tabla_usuarios");
     Table.innerHTML = "";
-    var cabecera=" <tr> <th>ID </th> <th>D.N.I.</th> <th>Apellidos</th> <th>Nombres</th> <th>NICK</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>TipoUsuario</th> </tr> ";
+    var cabecera=" <tr> <th>#</th> <th class='ocultame'>ID</th> <th>D.N.I.</th> <th>Apellidos</th> <th>Nombres</th> <th>NICK</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>TipoUsuario</th> <th>Estado</th> <th>Acción</th> </tr> ";
         $.ajax({ async: true, type: "POST", cache: 'false',
             data: { opcion:'INSERTA',dni:$('#dni_u').val(),apellidos:$('#apellidos_u').val(),nombres:$('#nombres_u').val(),nick: $('#nick_u').val(),direccion:$('#direccion_u').val(),
                 telefono:$('#telefono_u').val(),email:$('#email_u').val(),pw:$('#pass').val(),tipo:$('#tusuario').val(),idempresa:$('#cod_sucursal').val()},
@@ -222,6 +220,8 @@ function fnInsertaUsuarios(){
             for(var i = 0; i < json.length; i++)
             {
             var x = i + 1;
+            var estado = (json[i].anulado === 'S') ? 'Bloqueado' : 'Activo';
+            var botonAccion = "<button type='button' onclick=\"fnToggleUsuario('" + json[i].id + "','" + json[i].anulado + "');\" title='" + ((json[i].anulado === 'S') ? 'Habilitar' : 'Deshabilitar') + "' class='btn " + ((json[i].anulado === 'S') ? 'btn-danger' : 'btn-success') + " btn-xs'><span class='glyphicon " + ((json[i].anulado === 'S') ? 'glyphicon-ok-circle' : 'glyphicon-ban-circle') + "'></span></button>";
             $('.editinplace').append(
                     "<tr id='u[" + i + "]' onclick='fnSeleccionaFilaUsuario(this.id);'>" +
                     "<td >" + x + "</td>" +
@@ -234,7 +234,8 @@ function fnInsertaUsuarios(){
                     "<td class='editable' data-campo='telefono_usuario'><span>"     +json[i].telefono_usuario  + "</span></td>" +
                     "<td class='editable' data-campo='e_mail'>"                     +json[i].e_mail            + "</span></td>" +
                     "<td class='editable' data-campo='tipousuario'>"                +json[i].tipousuario       + "</span></td>" +
-                    "<td>" + "<button id='btn_anular' onclick='fnAnulaUsuario();' title='Anular' type='button' aria-hidden='true' class='btn btn-default btn-xs' ><span class='glyphicon glyphicon-trash blue'></span></button>" + "</td>" +
+                    "<td>" + estado + "</td>" +
+                    "<td>" + botonAccion + " <button id='btn_anular' onclick='fnAnulaUsuario();' title='Anular' type='button' aria-hidden='true' class='btn btn-default btn-xs' ><span class='glyphicon glyphicon-trash blue'></span></button>" + "</td>" +
                     "</tr>");
             }
 	});
@@ -243,7 +244,7 @@ function fnInsertaUsuarios(){
 function fnListaUsuarios(){
         var Table = document.getElementById("tabla_usuarios");
     Table.innerHTML = "";
-    var cabecera=" <tr> <th>ID </th> <th>D.N.I.</th> <th>Apellidos</th> <th>Nombres</th> <th>NICK</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>TipoUsuario</th> </tr> ";
+    var cabecera=" <tr> <th>#</th> <th class='ocultame'>ID</th> <th>D.N.I.</th> <th>Apellidos</th> <th>Nombres</th> <th>NICK</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>TipoUsuario</th> <th>Estado</th> <th>Acción</th> </tr> ";
         $.ajax({ async: true, type: "POST", cache: 'false',
             data: { opcion:'L',idempresa:$('#cod_sucursal').val().substr(0,1)},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",            
@@ -257,6 +258,8 @@ function fnListaUsuarios(){
             for(var i = 0; i < json.length; i++)
             {
             var x = i + 1;
+            var estado = (json[i].anulado === 'S') ? 'Bloqueado' : 'Activo';
+            var botonAccion = "<button type='button' onclick=\"fnToggleUsuario('" + json[i].id + "','" + json[i].anulado + "');\" title='" + ((json[i].anulado === 'S') ? 'Habilitar' : 'Deshabilitar') + "' class='btn " + ((json[i].anulado === 'S') ? 'btn-danger' : 'btn-success') + " btn-xs'><span class='glyphicon " + ((json[i].anulado === 'S') ? 'glyphicon-ok-circle' : 'glyphicon-ban-circle') + "'></span></button>";
             $('.editinplace').append(
                     "<tr id='u[" + i + "]' onclick='fnSeleccionaFilaUsuario(this.id);'>" +
                     "<td >" + x + "</td>" +
@@ -269,7 +272,8 @@ function fnListaUsuarios(){
                     "<td class='editable' data-campo='telefono_usuario'><span>"     +json[i].telefono_usuario  + "</span></td>" +
                     "<td class='editable' data-campo='e_mail'>"                     +json[i].e_mail            + "</span></td>" +
                     "<td class='editable' data-campo='tipousuario'>"                +json[i].tipousuario       + "</span></td>" +
-                    "<td>" + "<button id='btn_anular' onclick='fnAnulaUsuario();' title='Anular' type='button' aria-hidden='true' class='btn btn-default btn-xs' ><span class='glyphicon glyphicon-trash blue'></span></button>" + "</td>" +
+                    "<td>" + estado + "</td>" +
+                    "<td>" + botonAccion + " <button id='btn_anular' onclick='fnAnulaUsuario();' title='Anular' type='button' aria-hidden='true' class='btn btn-default btn-xs' ><span class='glyphicon glyphicon-trash blue'></span></button>" + "</td>" +
                     "</tr>");
             }
 	});
@@ -291,6 +295,22 @@ if ($("#tipo_usuario").val().trim() === "ADMIN") {
     });
 } else {jError('Solo Administrador', 'Giros - Transferencias');}        
 return false;
+}
+
+function fnToggleUsuario(idusuario, estadoActual){
+    var nuevoEstado = (estadoActual === 'S') ? 'N' : 'S';
+    var accion = (estadoActual === 'S') ? 'Habilitar' : 'Deshabilitar';
+    jConfirm('¿Está seguro de ' + accion + ' este usuario?', 'Giros - Transferencias', function(r) {
+        if (r) {
+            $.ajax({async: true, type: 'POST', cache: false,
+                data: {opcion:'HABILITA', idusuario: idusuario, valor: nuevoEstado},
+                url: 'controles/ManteUsuarios.php',
+                beforeSend: function () { $('.mensaje').css('display', 'block'); $('.mensaje').html("<img src='img/cargando.gif'>"); },
+                complete: function () { $('.mensaje').css('display', 'none'); fnListaUsuarios(); }
+            });
+        }
+    });
+    return false;
 }
 
 function fnSeleccionaFilaUsuario(idfila){
@@ -495,7 +515,7 @@ fnDeshabilita();
 
     var Table = document.getElementById("tabla_usuarios");
     Table.innerHTML = "";
-    var cabecera=" <tr> <th>ID </th> <th>D.N.I.</th> <th>Apellidos</th> <th>Nombres</th> <th>NICK</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>TipoUsuario</th> </tr> ";
+    var cabecera=" <tr> <th>#</th> <th class='ocultame'>ID</th> <th>D.N.I.</th> <th>Apellidos</th> <th>Nombres</th> <th>NICK</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>TipoUsuario</th> <th>Estado</th> <th>Acción</th> </tr> ";
         $.ajax({ async: true, type: "POST", cache: 'false',
             data: { opcion:'L',idempresa:$('#cod_sucursal').val().substr(0,1)},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",            
@@ -509,6 +529,8 @@ fnDeshabilita();
             for(var i = 0; i < json.length; i++)
             {
             var x = i + 1;
+            var estado = (json[i].anulado === 'S') ? 'Bloqueado' : 'Activo';
+            var botonAccion = "<button type='button' onclick=\"fnToggleUsuario('" + json[i].id + "','" + json[i].anulado + "');\" title='" + ((json[i].anulado === 'S') ? 'Habilitar' : 'Deshabilitar') + "' class='btn " + ((json[i].anulado === 'S') ? 'btn-danger' : 'btn-success') + " btn-xs'><span class='glyphicon " + ((json[i].anulado === 'S') ? 'glyphicon-ok-circle' : 'glyphicon-ban-circle') + "'></span></button>";
             $('.editinplace').append(
                     "<tr id='u[" + i + "]' onclick='fnSeleccionaFilaUsuario(this.id);'>" +
                     "<td >" + x + "</td>" +
@@ -519,9 +541,10 @@ fnDeshabilita();
                     "<td class='editable' data-campo='nusuario'><span>"             +json[i].nusuario          + "</span></td>" +
                     "<td class='editable' data-campo='direccion_usuario'><span>"    +json[i].direccion_usuario + "</span></td>" +
                     "<td class='editable' data-campo='telefono_usuario'><span>"     +json[i].telefono_usuario  + "</span></td>" +
-                    "<td class='editable' data-campo='e_mail'><span>"               +json[i].e_mail            + "</span></td>" +
-                    "<td class='editable' data-campo='tipousuario'><span>"          +json[i].tipousuario       + "</span></td>" +
-                    "<td>" + "<button id='btn_anular' onclick='fnAnulaUsuario();' title='Anular' type='button' aria-hidden='true' class='btn btn-default btn-xs' ><span class='glyphicon glyphicon-remove blue'></span></button>" + "</td>" +
+                    "<td class='editable' data-campo='e_mail'>"                     +json[i].e_mail            + "</span></td>" +
+                    "<td class='editable' data-campo='tipousuario'>"                +json[i].tipousuario       + "</span></td>" +
+                    "<td>" + estado + "</td>" +
+                    "<td>" + botonAccion + " <button id='btn_anular' onclick='fnAnulaUsuario();' title='Anular' type='button' aria-hidden='true' class='btn btn-default btn-xs' ><span class='glyphicon glyphicon-trash blue'></span></button>" + "</td>" +
                     "</tr>");
             }
 	});

@@ -7,7 +7,7 @@ if (isset($_GET['term']) || isset($_GET["opcion"])) {
 
     if (isset($_GET['term'])) {
         $return_arr = array();
-        if ($result = $mysqli->query("SELECT cod_sucursal,nom_sucursal from sucursal WHERE nom_sucursal LIKE CONCAT('%','" . $_GET["term"] . "','%') order by nom_sucursal")) {
+        if ($result = $mysqli->query("SELECT cod_sucursal,nom_sucursal from sucursal WHERE nom_sucursal LIKE CONCAT('%','" . $_GET["term"] . "','%') and anulado = 'N' order by nom_sucursal")) {
             while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
                 //$return_arr[] = $row['nom_sucursal'];
                 //$return_arr[] = $row['cod_sucursal'];
@@ -24,7 +24,7 @@ if (isset($_GET['term']) || isset($_GET["opcion"])) {
 
         if ($_GET["opcion"] === "LISTA") {
             //generamos la consulta
-            $sql = " SELECT idsucursal,nom_sucursal,cod_sucursal,dir_sucursal,fono_sucursal,e_mail FROM sucursal WHERE anulado = 'N' and idempresa='".$_GET["idempresa"]."'  order by cod_sucursal ";
+            $sql = " SELECT idsucursal,nom_sucursal,cod_sucursal,dir_sucursal,fono_sucursal,e_mail,anulado FROM sucursal WHERE idempresa='".$_GET["idempresa"]."'  order by cod_sucursal ";
             if (!$result = mysqli_query($mysqli, $sql)) {
                 die();
             }
@@ -36,7 +36,8 @@ if (isset($_GET['term']) || isset($_GET["opcion"])) {
                     "cod_sucursal"  => $sucu["cod_sucursal"],
                     "dir_sucursal"  => $sucu["dir_sucursal"],
                     "fono_sucursal" => $sucu["fono_sucursal"],
-                    "e_mail"        => $sucu["e_mail"]                    
+                    "e_mail"        => $sucu["e_mail"],
+                    "anulado"       => $sucu["anulado"]                    
                 );
             }
             //desconectamos la base de datos
@@ -65,7 +66,8 @@ if (isset($_GET['term']) || isset($_GET["opcion"])) {
                     "cod_sucursal" => $sucu["cod_sucursal"],
                     "dir_sucursal" => $sucu["dir_sucursal"],
                     "fono_sucursal" => $sucu["fono_sucursal"],
-                    "e_mail" => $sucu["e_mail"]
+                    "e_mail" => $sucu["e_mail"],
+                    "anulado" => $sucu["anulado"]
                 );
             }
             $close = mysqli_close($mysqli) or die("Ha sucedido un error inexperado en la desconexion de la base de datos");
@@ -75,12 +77,20 @@ if (isset($_GET['term']) || isset($_GET["opcion"])) {
     }
 } else { /* para evitar problemas al mezclar GET y POST  */
 
-    if ($_POST["opcion"] === "ANULA"){
-        $query = $mysqli->query(" call spAnulaSucursal('".$_POST["idsucu"]."','".$_POST["codsucu"]."')");        
-        if ($query)
-            echo "<span class='ok'>Anulado correctamente.</span>";
+    if ($_POST["opcion"] === "TOGGLE"){
+        // Obtener estado actual
+        $query_estado = $mysqli->query("SELECT anulado FROM sucursal WHERE idsucursal = '".$_POST["idsucu"]."'");
+        $fila = $query_estado->fetch_assoc();
+        $nuevo_estado = ($fila['anulado'] === 'N') ? 'S' : 'N';
+        
+        // Actualizar a nuevo estado
+        $query = $mysqli->query("UPDATE sucursal SET anulado = '".$nuevo_estado."' WHERE idsucursal = '".$_POST["idsucu"]."'");        
+        if ($query) {
+            $estado_texto = ($nuevo_estado === 'S') ? 'Deshabilitada' : 'Habilitada';
+            echo "<span class='ok'>Sucursal ".$estado_texto." correctamente.</span>";
+        }
         else
-            echo "<span class='ko'>" . $db->error . "</span>";
+            echo "<span class='ko'>" . $mysqli->error . "</span>";
     }
 
     if ($_POST["opcion"] === "DATOS") {

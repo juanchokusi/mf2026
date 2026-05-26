@@ -26,8 +26,17 @@ if (isset($_GET['term']) || isset($_GET["opcion"]) ){
         
     }
 
+    if ($_POST["opcion"] === "HABILITA") {
+        $valor = ($_POST["valor"] === 'S') ? 'S' : 'N';
+        $query = $mysqli->query("update usuariosistema set anulado ='$valor' where idusuario='" . intval($_POST["idusuario"]) . "' ");
+        if ($query)
+            echo "<span class='ok'>Estado actualizado correctamente.</span>";
+        else
+            echo "<span class='ko'>" . $mysqli->error . "</span>";
+    }
+
     if ($_POST["opcion"] === "L") {
-        $query = $mysqli->query("select idusuario,dni_usuario,apellidos_usuario,nombres_usuario,nusuario,direccion_usuario,telefono_usuario,e_mail,tipousuario from usuariosistema where anulado='N' and idempresa='".$_POST["idempresa"]."' order by 3");
+        $query = $mysqli->query("select idusuario,dni_usuario,apellidos_usuario,nombres_usuario,nusuario,direccion_usuario,telefono_usuario,e_mail,tipousuario,anulado from usuariosistema where idempresa='".$_POST["idempresa"]."' order by 3");
         $datos = array();
         while ($usuarios = $query->fetch_array()) {
             $datos[] = array(
@@ -39,7 +48,8 @@ if (isset($_GET['term']) || isset($_GET["opcion"]) ){
                 "direccion_usuario" => $usuarios["direccion_usuario"],
                 "telefono_usuario"  => $usuarios["telefono_usuario"],
                 "e_mail"            => $usuarios["e_mail"],
-                "tipousuario"       => $usuarios["tipousuario"]
+                "tipousuario"       => $usuarios["tipousuario"],
+                "anulado"           => $usuarios["anulado"]
             );
         }
         //echo ($datos);

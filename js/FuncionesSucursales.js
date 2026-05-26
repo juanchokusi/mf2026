@@ -1,6 +1,6 @@
 function fnListaSucursal() {
     var url = "controles/ManteSucursales.php";
-    var cabecera = " <tr> <th>Itm</th> <th>NombreSucursal</th> <th>Codigo</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>empresa</th> </tr> ";
+    var cabecera = " <tr> <th>Itm</th> <th>NombreSucursal</th> <th>Codigo</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>Estado</th> </tr> ";
     $("#tabla_sucursales thead").html(cabecera);
     $("#tabla_sucursales tbody").html("");
     $.getJSON(url, {opcion: "LISTA",idempresa:$("#codsucursal").val().substr(0,1)}, function (sucus)
@@ -10,6 +10,9 @@ function fnListaSucursal() {
                 jError($("#codigo").val() + ' ya existe, seleccione otro...', 'Giros - Transferencias');
             }
             i = i + 1;
+            var estado = sucus.anulado === 'S' ? 'Deshabilitada' : 'Habilitada';
+            var iconoEstado = sucus.anulado === 'S' ? 'glyphicon-remove' : 'glyphicon-ok';
+            var colorEstado = sucus.anulado === 'S' ? 'red' : 'green';
             var newRow =
                     "<tr id='b[" + i + "]' onclick='fnSeleccionaSucursal(this.id);'>"
                     + "<td>" + i + "</td>"
@@ -19,8 +22,7 @@ function fnListaSucursal() {
                     + "<td class='editable' data-campo='dir_sucursal'><span>" + sucus.dir_sucursal + "</span></td>"
                     + "<td class='editable' data-campo='fono_sucursal'><span>" + sucus.fono_sucursal + "</span></td>"
                     + "<td class='editable' data-campo='e_mail'><span>" + sucus.e_mail + "</span></td>"
-                    + "<td class='editable' data-campo='empresa'><span>" + sucus.empresa + "</span></td>"
-                    + "<td>" + "<button id='btn_anular' onclick='fnAnulaSucursal();' title='Anular' type='button' class='btn btn-default btn-xs' ><span class='glyphicon glyphicon-trash blue'></span></button>" + "</td>"
+                    + "<td><button class='btn_toggle' onclick='fnToggleSucursal();' title='"+estado+"' type='button' class='btn btn-default btn-xs' ><span class='glyphicon " + iconoEstado + " " + colorEstado + "'></span></button></td>"
                     + "</tr>";
             $(newRow).appendTo("#tabla_sucursales tbody");
         });
@@ -29,7 +31,7 @@ function fnListaSucursal() {
 
 function fnInsertaSucursal() {
     var url = "controles/ManteSucursales.php";
-    var cabecera = " <tr> <th>Itm</th> <th>NombreSucursal</th> <th>Codigo</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th>  </tr> ";
+    var cabecera = " <tr> <th>Itm</th> <th>NombreSucursal</th> <th>Codigo</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>Estado</th> </tr> ";
     $("#tabla_sucursales thead").html(cabecera);
     $("#tabla_sucursales tbody").html("");
     $.getJSON(url, {opcion: "INSERTA", nombre: $("#nombre").val(), codigo: $("#codigo").val(), dir: $("#direccion").val(), 
@@ -40,6 +42,9 @@ function fnInsertaSucursal() {
                 jError($("#codigo").val() + ' ya existe, Digite otro...', 'Giros - Transferencias');
             }
             i = i + 1;
+            var estado = sucus.anulado === 'S' ? 'Deshabilitada' : 'Habilitada';
+            var iconoEstado = sucus.anulado === 'S' ? 'glyphicon-remove' : 'glyphicon-ok';
+            var colorEstado = sucus.anulado === 'S' ? 'text-danger' : 'text-success';
             var newRow =
                     "<tr id='b[" + i + "]' onclick='fnSeleccionaSucursal(this.id);'>"
                     + "<td>" + i + "</td>"
@@ -49,7 +54,7 @@ function fnInsertaSucursal() {
                     + "<td class='editable' data-campo='dir_sucursal'><span>" + sucus.dir_sucursal + "</span></td>"
                     + "<td class='editable' data-campo='fono_sucursal'><span>" + sucus.fono_sucursal + "</span></td>"
                     + "<td class='editable' data-campo='e_mail'><span>" + sucus.e_mail + "</span></td>"
-                    + "<td>" + "<button id='btn_anular' onclick='fnAnulaSucursal();' title='Anular' type='button' class='btn btn-default btn-xs' ><span class='glyphicon glyphicon-trash blue'></span></button>" + "</td>"
+                    + "<td><button class='btn btn-default btn-xs btn_toggle' onclick='fnToggleSucursal();' data-state='" + sucus.anulado + "' title='" + estado + "' type='button'><span class='glyphicon " + iconoEstado + " " + colorEstado + "'></span></button></td>"
                     + "</tr>";
             $(newRow).appendTo("#tabla_sucursales tbody");
         });
@@ -93,12 +98,18 @@ function fnSeleccionaSucursal(idfila) {
 
 }
 
-function fnAnulaSucursal() {
+function fnToggleSucursal() {
     if ($("#tipo_usuario").val().trim() === "ADMIN") {
-        jConfirm("Seguro de Eliminar: " + $('#nombre').val() + "--" + $("#codigo").val(), "Giros - Transferencias", function (r) {
+        var nombre = $('#nombre').val();
+        var codigo = $("#codigo").val();
+        if (!nombre || !codigo) {
+            jError('Debe seleccionar una sucursal primero', 'Habilitar/Deshabilitar Sucursal');
+            return;
+        }
+        jConfirm("Esata seguro de Cambiar ESTADO de: " + nombre + " -- " + codigo, "Habilitar/Deshabilitar Sucursal", function (r) {
             if (r) {
                 $.ajax({async: true, type: "POST", dataType: "json", cache: false,
-                    data: {opcion: 'ANULA', idsucu: $("#idsucu").val(),codsucu:$("#codsucursal").val()},
+                    data: {opcion: 'TOGGLE', idsucu: $("#idsucu").val()},
                     url: "controles/ManteSucursales.php",
                     beforeSend: function (objeto) {
                         $("#carga").html("<img src='img/loader.gif'>");
@@ -106,13 +117,12 @@ function fnAnulaSucursal() {
                     complete: function (objeto) {
                         $('#carga').css('display', 'none');
                     }
-                    //success: fnMuestraBancos
                 });
                 fnListaSucursal();
             }
         });
     } else {
-        jError('Solo Administrador', 'Giros - Transferencias');
+        jError('Solo Administrador puede cambiar el estado', 'Habilitar/Deshabilitar Sucursal');
     }
 }
 ////////////////////////////////////////////////////////
@@ -151,13 +161,16 @@ $(document).ready(function () {
     $("#menu-toggle").tooltip({show: {effect: "slideDown", delay: 250}});
 
     var url = "controles/ManteSucursales.php";
-    var cabecera = " <tr> <th>Itm</th> <th>NombreSucursal</th> <th>Codigo</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> </tr> ";
+    var cabecera = " <tr> <th>Itm</th> <th>NombreSucursal</th> <th>Codigo</th> <th>Direccion</th> <th>Telefono</th> <th>e-mail</th> <th>Estado</th> </tr> ";
     $("#tabla_sucursales thead").html(cabecera);
     $("#tabla_sucursales tbody").html("");
     $.getJSON(url, {opcion: "LISTA",idempresa:$("#codsucursal").val().substr(0,1)}, function (sucus) {
 
         $.each(sucus, function (i, sucus) {
             i = i + 1;
+            var estado = sucus.anulado === 'S' ? 'Deshabilitada' : 'Habilitada';
+            var iconoEstado = sucus.anulado === 'S' ? 'glyphicon-remove' : 'glyphicon-ok';
+            var colorEstado = sucus.anulado === 'S' ? 'text-danger' : 'text-success';
             var newRow =
                     "<tr id='b[" + i + "]' onclick='fnSeleccionaSucursal(this.id);'>"
                     + "<td>" + i + "</td>"
@@ -166,8 +179,8 @@ $(document).ready(function () {
                     + "<td class='editable' data-campo='cod_sucursal'><span>" + sucus.cod_sucursal + "</span></td>"
                     + "<td class='editable' data-campo='dir_sucursal'><span>" + sucus.dir_sucursal + "</span></td>"
                     + "<td class='editable' data-campo='fono_sucursal'><span>" + sucus.fono_sucursal + "</span></td>"
-                    + "<td class='editable' data-campo='e_mail'><span>" + sucus.e_mail + "</span></td>"                    
-                    + "<td>" + "<button id='btn_anular' onclick='fnAnulaSucursal();' title='Anular' type='button' class='btn btn-default btn-xs' ><span class='glyphicon glyphicon-trash blue'></span></button>" + "</td>"
+                    + "<td class='editable' data-campo='e_mail'><span>" + sucus.e_mail + "</span></td>"
+                    + "<td><button class='btn btn-default btn-xs btn_toggle' onclick='fnToggleSucursal();' data-state='" + sucus.anulado + "' title='" + estado + "' type='button'><span class='glyphicon " + iconoEstado + " " + colorEstado + "'></span></button></td>"
                     + "</tr>";
             $(newRow).appendTo("#tabla_sucursales tbody");
         });
@@ -275,7 +288,10 @@ $(document).ready(function () {
 
     });
 
-    $("#btn_anular").tooltip({show: {effect: "explode", delay: 250}});
+    $(document).on("mouseenter", ".btn_toggle", function() {
+        var estado = $(this).attr('title');
+        $(this).tooltip({title: estado, trigger: "hover"}).tooltip('show');
+    });
 
 
     $("#buscador").keyup(function () {

@@ -10,11 +10,9 @@
          </div>
 
          <div class="btn-group btn-group-sm">
-            <button id="btn_meta" type="button" class="btn btn-info">Meta <span id="spn_meta"
-                  class="badge">0</span></button>
+            <button id="btn_meta" type="button" class="btn btn-info">Meta <span id="spn_meta" class="badge">0</span></button>
             <button type="button" class="btn btn-success">Movs <span id="spn_nroops" class="badge">0</span></button>
-            <button type="button" class="btn btn-warning">Falta <span id="spn_diferencia"
-                  class="badge">0</span></button>
+            <button type="button" class="btn btn-warning">Falta <span id="spn_diferencia" class="badge">0</span></button>
          </div>
       </div>
 

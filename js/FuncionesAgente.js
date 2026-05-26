@@ -986,9 +986,10 @@ $('#listatipotran').change(function () {
         }
     });
 
-    $(document).on("click", ".guardar", function (e) {
-      var fecha_servidor = FechaServidor();
+    $(document).on("click", ".guardar", async function (e) {
+      var fecha_servidor = await FechaServidor();
       var fecha_seleccionada = $("#fecha_tran").val();
+      console.log(fecha_servidor);
       if (fecha_servidor === fecha_seleccionada) {
         $(".mensaje").html("<img src='img/cargando.gif'>");
         e.preventDefault();
@@ -1460,6 +1461,7 @@ $("#btn_diag_cancelar").click(function () {
   $("#diag_txt_meta").val('');
   $("#btn_diag_cerrar").prop("disabled", true);
   $("#btn_diag_guardar").prop("disabled", true);
+  $("#btn_diag_nuevo").prop("disabled", false);
 });
 
 $("#btn_diag_nuevo").click(function () {
@@ -1470,6 +1472,7 @@ $("#btn_diag_nuevo").click(function () {
       $("#diag_txt_meta").val('');
       $("#btn_diag_guardar").prop("disabled", false);
       $("#btn_diag_cerrar").prop("disabled", true);
+      $("#btn_diag_nuevo").prop("disabled", true);
   } else { jError("Existen meta abierta, cierre para continuar...", "Money-Flash"); }
 });
 
@@ -1498,8 +1501,8 @@ $("#btn_diag_cerrar").click(function () {
   if ($("#tipo_usuario").val().trim() === "ADMIN") {
     fnMuestraMetasAgente(
       $("#nro_cuenta").val(),
-      $("#diag_fechai").val(),
-      $("#diag_fechaf").val(),
+      '100-10-10',
+      '100-10-10',
       $("#diag_txt_meta").val(),
       $("#idmeta").val(),
       "cerrar");
@@ -2016,12 +2019,22 @@ function VerificaPass(pass_evaluar) {
 }
 
 function FechaServidor() {
+    function soloFecha(valor) {
+        if (typeof valor !== 'string') return '';
+        var fecha = valor.trim();
+        if (!fecha) return '';
+        // Si viene con hora, devolver solo la parte de fecha
+        fecha = fecha.split(' ')[0];
+        fecha = fecha.split('T')[0];
+        return fecha;
+    }
+
     return new Promise((resolve, reject) => {
         $.ajax({async: true, type: "POST", dataType: "json", cache: false,
             data: { opt: "srvfecha" },
             url: "controles/ManteAgentes.php",
         }).done(function (respuesta) {
-            resolve(respuesta[0].fechaservidor);
+            resolve(soloFecha(respuesta[0].fechaservidor));
         }).fail(function (jqXHR, textStatus, errorThrown) {
             reject(errorThrown);
         });
@@ -2042,6 +2055,11 @@ function ManteMetasxAgente(p_nrocuenta) {
     } else {
       $("#spn_meta").text(response.meta);
       $("#spn_nroops").text(response.nroops);
+      if (response.diferencia < 0) {
+        $("#spn_diferencia").css("color", "red");
+      } else {
+        $("#spn_diferencia").css("color", "green");
+      } 
       $("#spn_diferencia").text(response.diferencia);
       $("#meta_estado").val(response.estado);
     }

@@ -134,7 +134,8 @@ $FechaHoy = date("Y-m-d");
                 <div id="contiene_tabla" class="table-responsive mygrid-wrapper-div">                                                   
                     <table id="tabla_usuarios" class="editinplace table table-condensed table-hover ">
                         <tr>
-                            <th>ID.</th>
+                            <th>#</th>
+                            <th class="ocultame">ID</th>
                             <th>D.N.I.</th>
                             <th>Apellidos</th>
                             <th>Nombres</th>
@@ -142,6 +143,9 @@ $FechaHoy = date("Y-m-d");
                             <th>Direccion</th>
                             <th>Telefono</th>
                             <th>e-mail</th>
+                            <th>TipoUsuario</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
                         </tr>
                     </table>
 
